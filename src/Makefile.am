@@ -2136,6 +2136,10 @@ if HAVE_FF_APTX
 libbluez5_util_la_SOURCES += \
 		modules/bluetooth/a2dp/a2dp_aptx.c
 endif
+if HAVE_LDACBT
+libbluez5_util_la_SOURCES += \
+		modules/bluetooth/a2dp/a2dp_ldac.c
+endif
 if HAVE_BLUEZ_5_OFONO_HEADSET
 libbluez5_util_la_SOURCES += \
 		modules/bluetooth/backend-ofono.c
@@ -2155,6 +2159,10 @@ endif
 if HAVE_FF_APTX
 libbluez5_util_la_LIBADD += $(FF_AVCODEC_LIBS) $(FF_AVUTIL_LIBS)
 libbluez5_util_la_CFLAGS += $(FF_AVCODEC_CFLAGS) $(FF_AVUTIL_CFLAGS)
+endif
+if HAVE_LDACBT
+libbluez5_util_la_LIBADD += $(LDACBT_ENC_LIBS) $(LDACBT_ABR_LIBS)
+libbluez5_util_la_CFLAGS += $(LDACBT_ENC_CFLAGS) $(LDACBT_ABR_CFLAGS)
 endif
 
 module_bluez5_discover_la_SOURCES = modules/bluetooth/module-bluez5-discover.c

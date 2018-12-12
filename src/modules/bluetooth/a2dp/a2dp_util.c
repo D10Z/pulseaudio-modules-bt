@@ -42,6 +42,7 @@
 #define A2DP_APTX_HD_SRC_ENDPOINT A2DP_VENDOR_SRC_ENDPOINT "/APTXHD"
 #define A2DP_APTX_HD_SNK_ENDPOINT A2DP_VENDOR_SNK_ENDPOINT "/APTXHD"
 
+#define A2DP_LDAC_SRC_ENDPOINT A2DP_VENDOR_SRC_ENDPOINT "/LDAC"
 
 #define PA_A2DP_PRIORITY_DISABLE 0
 #define PA_A2DP_PRIORITY_MIN 1
@@ -240,6 +241,11 @@ void pa_a2dp_codec_index_to_endpoint(pa_a2dp_codec_index_t codec_index, const ch
             *endpoint = A2DP_APTX_HD_SRC_ENDPOINT;
             break;
 #endif
+#ifdef HAVE_LDACBT
+        case PA_A2DP_SOURCE_LDAC:
+            *endpoint = A2DP_LDAC_SRC_ENDPOINT;
+            break;
+#endif
         default:
             *endpoint = NULL;
     }
@@ -266,6 +272,10 @@ void pa_a2dp_endpoint_to_codec_index(const char *endpoint, pa_a2dp_codec_index_t
     else if (streq(endpoint, A2DP_APTX_HD_SRC_ENDPOINT))
         *codec_index = PA_A2DP_SOURCE_APTX_HD;
 #endif
+#ifdef HAVE_LDACBT
+    else if (streq(endpoint, A2DP_LDAC_SRC_ENDPOINT))
+        *codec_index = PA_A2DP_SOURCE_LDAC;
+#endif
     else
         *codec_index = PA_A2DP_CODEC_INDEX_UNAVAILABLE;
 };
@@ -290,6 +300,11 @@ void pa_a2dp_codec_index_to_a2dp_codec(pa_a2dp_codec_index_t codec_index, const 
         case PA_A2DP_SINK_APTX_HD:
         case PA_A2DP_SOURCE_APTX_HD:
             *a2dp_codec = &pa_a2dp_aptx_hd;
+            break;
+#endif
+#ifdef HAVE_LDACBT
+        case PA_A2DP_SOURCE_LDAC:
+            *a2dp_codec = &pa_a2dp_ldac;
             break;
 #endif
         default:
@@ -328,6 +343,13 @@ void pa_a2dp_a2dp_codec_to_codec_index(const pa_a2dp_codec_t *a2dp_codec, bool i
                 return;
             }
 #endif
+#ifdef HAVE_LDACBT
+            else if (A2DP_GET_VENDOR_ID(*a2dp_codec->vendor_codec) == LDAC_VENDOR_ID &&
+                     A2DP_GET_CODEC_ID(*a2dp_codec->vendor_codec) == LDAC_CODEC_ID) {
+                *codec_index = is_a2dp_sink ? PA_A2DP_CODEC_INDEX_UNAVAILABLE : PA_A2DP_SOURCE_LDAC;
+                return;
+            }
+#endif
             *codec_index = PA_A2DP_CODEC_INDEX_UNAVAILABLE;
             break;
         default:
@@ -359,6 +381,13 @@ pa_a2dp_get_a2dp_codec(uint8_t codec, const a2dp_vendor_codec_t *vendor_codec, c
             } else if (A2DP_GET_VENDOR_ID(*vendor_codec) == APTX_HD_VENDOR_ID &&
                        A2DP_GET_CODEC_ID(*vendor_codec) == APTX_HD_CODEC_ID) {
                 *a2dp_codec = &pa_a2dp_aptx_hd;
+                return;
+            }
+#endif
+#ifdef HAVE_LDACBT
+            else if (A2DP_GET_VENDOR_ID(*vendor_codec) == LDAC_VENDOR_ID &&
+                     A2DP_GET_CODEC_ID(*vendor_codec) == LDAC_CODEC_ID) {
+                *a2dp_codec = &pa_a2dp_ldac;
                 return;
             }
 #endif

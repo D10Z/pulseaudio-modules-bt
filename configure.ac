@@ -1107,6 +1107,20 @@ AC_SUBST(HAVE_FF_APTX)
 AM_CONDITIONAL([HAVE_FF_APTX], [test "x$HAVE_FF_APTX" = x1])
 AS_IF([test "x$HAVE_FF_APTX" = "x1"], AC_DEFINE([HAVE_FF_APTX], 1, [Bluez 5 A2DP aptX, aptX HD codecs enabled]))
 
+## LDAC source ##
+AC_ARG_ENABLE([bluez5-ldac-codec],
+    AS_HELP_STRING([--disable-bluez5-ldac-codec],[Disable optional A2DP LDAC codec encoding support (Bluez 5)]))
+AS_IF([test "x$HAVE_BLUEZ_5" = "x1" && test "x$enable_bluez5_ldac_codec" != "xno"],
+    [PKG_CHECK_MODULES(LDACBT_ENC, [ ldacBT-enc ], HAVE_LDACBT_ENC=1, HAVE_LDACBT_ENC=0)],
+    HAVE_LDACBT_ENC=0)
+AS_IF([test "x$HAVE_BLUEZ_5" = "x1" && test "x$enable_bluez5_ldac_codec" != "xno"],
+    [PKG_CHECK_MODULES(LDACBT_ABR, [ ldacBT-abr ], HAVE_LDACBT_ABR=1, HAVE_LDACBT_ABR=0)],
+    HAVE_LDACBT_ABR=0)
+AS_IF([test "x$HAVE_LDACBT_ENC" = "x1" && test "x$HAVE_LDACBT_ABR" = "x1"], HAVE_LDACBT=1, HAVE_LDACBT=0)
+AC_SUBST(HAVE_LDACBT)
+AM_CONDITIONAL([HAVE_LDACBT], [test "x$HAVE_LDACBT" = x1])
+AS_IF([test "x$HAVE_LDACBT" = "x1"], AC_DEFINE([HAVE_LDACBT], 1, [Bluez 5 A2DP LDAC codec encoding support enabled]))
+
 ## Bluetooth Headset profiles backend ##
 
 AC_ARG_ENABLE([bluez5-ofono-headset],
@@ -1613,6 +1627,7 @@ AS_IF([test "x$HAVE_SYSTEMD_JOURNAL" = "x1"], ENABLE_SYSTEMD_JOURNAL=yes, ENABLE
 AS_IF([test "x$HAVE_BLUEZ_5" = "x1"], ENABLE_BLUEZ_5=yes, ENABLE_BLUEZ_5=no)
 AS_IF([test "x$HAVE_FDK_AAC" = "x1"], ENABLE_BLUEZ_5_AAC_CODEC=yes, ENABLE_BLUEZ_5_AAC_CODEC=no)
 AS_IF([test "x$HAVE_FF_APTX" = "x1"], ENABLE_BLUEZ_5_APTX_CODEC=yes, ENABLE_BLUEZ_5_APTX_CODEC=no)
+AS_IF([test "x$HAVE_LDACBT" = "x1"], ENABLE_BLUEZ_5_LDAC_CODEC=yes, ENABLE_BLUEZ_5_LDAC_CODEC=no)
 AS_IF([test "x$HAVE_BLUEZ_5_OFONO_HEADSET" = "x1"], ENABLE_BLUEZ_5_OFONO_HEADSET=yes, ENABLE_BLUEZ_5_OFONO_HEADSET=no)
 AS_IF([test "x$HAVE_BLUEZ_5_NATIVE_HEADSET" = "x1"], ENABLE_BLUEZ_5_NATIVE_HEADSET=yes, ENABLE_BLUEZ_5_NATIVE_HEADSET=no)
 AS_IF([test "x$HAVE_HAL_COMPAT" = "x1"], ENABLE_HAL_COMPAT=yes, ENABLE_HAL_COMPAT=no)
@@ -1673,6 +1688,7 @@ echo "
       Enable BlueZ 5:              ${ENABLE_BLUEZ_5}
         Enable A2DP AAC codec:     ${ENABLE_BLUEZ_5_AAC_CODEC}
         Enable A2DP aptX(HD):      ${ENABLE_BLUEZ_5_APTX_CODEC}
+        Enable A2DP LDAC source:   ${ENABLE_BLUEZ_5_LDAC_CODEC}
         Enable ofono headsets:     ${ENABLE_BLUEZ_5_OFONO_HEADSET}
         Enable native headsets:    ${ENABLE_BLUEZ_5_NATIVE_HEADSET}
     Enable udev:                   ${ENABLE_UDEV}
