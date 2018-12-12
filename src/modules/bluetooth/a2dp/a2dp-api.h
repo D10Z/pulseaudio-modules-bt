@@ -25,6 +25,9 @@ extern const pa_a2dp_codec_t pa_a2dp_aac;
 extern const pa_a2dp_codec_t pa_a2dp_aptx;
 extern const pa_a2dp_codec_t pa_a2dp_aptx_hd;
 #endif
+#ifdef HAVE_LDACBT
+extern const pa_a2dp_codec_t pa_a2dp_ldac;
+#endif
 
 /* Run from <pa_a2dp_sink_t>.encode */
 
@@ -53,6 +56,9 @@ typedef enum pa_a2dp_codec_index {
 #ifdef HAVE_FF_APTX
     PA_A2DP_SOURCE_APTX,
     PA_A2DP_SOURCE_APTX_HD,
+#endif
+#ifdef HAVE_LDACBT
+    PA_A2DP_SOURCE_LDAC,
 #endif
     PA_A2DP_SOURCE_MAX,
     PA_A2DP_CODEC_INDEX_UNAVAILABLE
