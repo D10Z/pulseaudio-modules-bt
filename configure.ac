@@ -1061,7 +1061,7 @@ PA_MACHINE_ID_FALLBACK="${localstatedir}/lib/dbus/machine-id"
 AX_DEFINE_DIR(PA_MACHINE_ID_FALLBACK, PA_MACHINE_ID_FALLBACK,
 	      [Fallback machine-id file])
 
-#### BlueZ support (optional, dependent on D-Bus and SBC) ####
+#### BlueZ support (optional, dependent on D-Bus and SBC and FDK-AAC) ####
 
 AC_ARG_ENABLE([bluez5],
     AS_HELP_STRING([--disable-bluez5],[Disable optional BlueZ 5 support]))
@@ -1082,6 +1082,16 @@ AM_CONDITIONAL([HAVE_BLUEZ_5], [test "x$HAVE_BLUEZ_5" = x1])
 AS_IF([test "x$HAVE_BLUEZ_5" = "x1"], HAVE_BLUEZ=1, HAVE_BLUEZ=0)
 AC_SUBST(HAVE_BLUEZ)
 AM_CONDITIONAL([HAVE_BLUEZ], [test "x$HAVE_BLUEZ" = x1])
+
+## FDK-AAC ##
+AC_ARG_ENABLE([bluez5-aac-codec],
+    AS_HELP_STRING([--disable-bluez5-aac-codec],[Disable optional A2DP AAC codec support (Bluez 5)]))
+AS_IF([test "x$HAVE_BLUEZ_5" = "x1" && test "x$enable_bluez5_aac_codec" != "xno"],
+    [PKG_CHECK_MODULES(FDK_AAC, [ fdk-aac >= 0.1.5 ], HAVE_FDK_AAC=1, HAVE_FDK_AAC=0)],
+    HAVE_FDK_AAC=0)
+AC_SUBST(HAVE_FDK_AAC)
+AM_CONDITIONAL([HAVE_FDK_AAC], [test "x$HAVE_FDK_AAC" = x1])
+AS_IF([test "x$HAVE_FDK_AAC" = "x1"], AC_DEFINE([HAVE_FDK_AAC], 1, [Bluez 5 A2DP AAC codec enabled]))
 
 ## Bluetooth Headset profiles backend ##
 
@@ -1587,6 +1597,7 @@ AS_IF([test "x$HAVE_SYSTEMD_DAEMON" = "x1"], ENABLE_SYSTEMD_DAEMON=yes, ENABLE_S
 AS_IF([test "x$HAVE_SYSTEMD_LOGIN" = "x1"], ENABLE_SYSTEMD_LOGIN=yes, ENABLE_SYSTEMD_LOGIN=no)
 AS_IF([test "x$HAVE_SYSTEMD_JOURNAL" = "x1"], ENABLE_SYSTEMD_JOURNAL=yes, ENABLE_SYSTEMD_JOURNAL=no)
 AS_IF([test "x$HAVE_BLUEZ_5" = "x1"], ENABLE_BLUEZ_5=yes, ENABLE_BLUEZ_5=no)
+AS_IF([test "x$HAVE_FDK_AAC" = "x1"], ENABLE_BLUEZ_5_AAC_CODEC=yes, ENABLE_BLUEZ_5_AAC_CODEC=no)
 AS_IF([test "x$HAVE_BLUEZ_5_OFONO_HEADSET" = "x1"], ENABLE_BLUEZ_5_OFONO_HEADSET=yes, ENABLE_BLUEZ_5_OFONO_HEADSET=no)
 AS_IF([test "x$HAVE_BLUEZ_5_NATIVE_HEADSET" = "x1"], ENABLE_BLUEZ_5_NATIVE_HEADSET=yes, ENABLE_BLUEZ_5_NATIVE_HEADSET=no)
 AS_IF([test "x$HAVE_HAL_COMPAT" = "x1"], ENABLE_HAL_COMPAT=yes, ENABLE_HAL_COMPAT=no)
@@ -1645,6 +1656,7 @@ echo "
     Enable LIRC:                   ${ENABLE_LIRC}
     Enable D-Bus:                  ${ENABLE_DBUS}
       Enable BlueZ 5:              ${ENABLE_BLUEZ_5}
+        Enable A2DP AAC codec:     ${ENABLE_BLUEZ_5_AAC_CODEC}
         Enable ofono headsets:     ${ENABLE_BLUEZ_5_OFONO_HEADSET}
         Enable native headsets:    ${ENABLE_BLUEZ_5_NATIVE_HEADSET}
     Enable udev:                   ${ENABLE_UDEV}

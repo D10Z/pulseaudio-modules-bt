@@ -2128,6 +2128,10 @@ libbluez5_util_la_SOURCES = \
 		modules/bluetooth/a2dp/a2dp-api.h \
 		modules/bluetooth/a2dp/a2dp-codecs.h \
 		modules/bluetooth/a2dp/rtp.h
+if HAVE_FDK_AAC
+libbluez5_util_la_SOURCES += \
+		modules/bluetooth/a2dp/a2dp_aac.c
+endif
 if HAVE_BLUEZ_5_OFONO_HEADSET
 libbluez5_util_la_SOURCES += \
 		modules/bluetooth/backend-ofono.c
@@ -2140,6 +2144,10 @@ endif
 libbluez5_util_la_LDFLAGS = -avoid-version
 libbluez5_util_la_LIBADD = $(MODULE_LIBADD) $(DBUS_LIBS) $(SBC_LIBS)
 libbluez5_util_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS) $(SBC_CFLAGS)
+if HAVE_FDK_AAC
+libbluez5_util_la_LIBADD += $(FDK_AAC_LIBS)
+libbluez5_util_la_CFLAGS += $(FDK_AAC_CFLAGS)
+endif
 
 module_bluez5_discover_la_SOURCES = modules/bluetooth/module-bluez5-discover.c
 module_bluez5_discover_la_LDFLAGS = $(MODULE_LDFLAGS)

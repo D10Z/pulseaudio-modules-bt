@@ -37,7 +37,9 @@ typedef struct pa_a2dp_codec pa_a2dp_codec_t;
 typedef struct pa_a2dp_config pa_a2dp_config_t;
 
 extern const pa_a2dp_codec_t pa_a2dp_sbc;
-
+#ifdef HAVE_FDK_AAC
+extern const pa_a2dp_codec_t pa_a2dp_aac;
+#endif
 
 /* Run from <pa_a2dp_sink_t>.encode */
 
@@ -50,9 +52,15 @@ typedef void (*pa_a2dp_source_read_buf_free_cb_t)(const void **read_buf, void *d
 typedef enum pa_a2dp_codec_index {
     PA_A2DP_SINK_MIN,
     PA_A2DP_SINK_SBC,
+#ifdef HAVE_FDK_AAC
+    PA_A2DP_SINK_AAC,
+#endif
     PA_A2DP_SINK_MAX,
     PA_A2DP_SOURCE_MIN = PA_A2DP_SINK_MAX,
     PA_A2DP_SOURCE_SBC,
+#ifdef HAVE_FDK_AAC
+    PA_A2DP_SOURCE_AAC,
+#endif
     PA_A2DP_SOURCE_MAX,
     PA_A2DP_CODEC_INDEX_UNAVAILABLE
 } pa_a2dp_codec_index_t;
