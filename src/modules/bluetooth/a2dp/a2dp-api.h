@@ -21,6 +21,10 @@ extern const pa_a2dp_codec_t pa_a2dp_sbc;
 #ifdef HAVE_FDK_AAC
 extern const pa_a2dp_codec_t pa_a2dp_aac;
 #endif
+#ifdef HAVE_FF_APTX
+extern const pa_a2dp_codec_t pa_a2dp_aptx;
+extern const pa_a2dp_codec_t pa_a2dp_aptx_hd;
+#endif
 
 /* Run from <pa_a2dp_sink_t>.encode */
 
@@ -36,11 +40,19 @@ typedef enum pa_a2dp_codec_index {
 #ifdef HAVE_FDK_AAC
     PA_A2DP_SINK_AAC,
 #endif
+#ifdef HAVE_FF_APTX
+    PA_A2DP_SINK_APTX,
+    PA_A2DP_SINK_APTX_HD,
+#endif
     PA_A2DP_SINK_MAX,
     PA_A2DP_SOURCE_MIN = PA_A2DP_SINK_MAX,
     PA_A2DP_SOURCE_SBC,
 #ifdef HAVE_FDK_AAC
     PA_A2DP_SOURCE_AAC,
+#endif
+#ifdef HAVE_FF_APTX
+    PA_A2DP_SOURCE_APTX,
+    PA_A2DP_SOURCE_APTX_HD,
 #endif
     PA_A2DP_SOURCE_MAX,
     PA_A2DP_CODEC_INDEX_UNAVAILABLE

@@ -1061,7 +1061,7 @@ PA_MACHINE_ID_FALLBACK="${localstatedir}/lib/dbus/machine-id"
 AX_DEFINE_DIR(PA_MACHINE_ID_FALLBACK, PA_MACHINE_ID_FALLBACK,
 	      [Fallback machine-id file])
 
-#### BlueZ support (optional, dependent on D-Bus and SBC and FDK-AAC) ####
+#### BlueZ support (optional, dependent on D-Bus, SBC, FDK-AAC and FFmpeg) ####
 
 AC_ARG_ENABLE([bluez5],
     AS_HELP_STRING([--disable-bluez5],[Disable optional BlueZ 5 support]))
@@ -1092,6 +1092,20 @@ AS_IF([test "x$HAVE_BLUEZ_5" = "x1" && test "x$enable_bluez5_aac_codec" != "xno"
 AC_SUBST(HAVE_FDK_AAC)
 AM_CONDITIONAL([HAVE_FDK_AAC], [test "x$HAVE_FDK_AAC" = x1])
 AS_IF([test "x$HAVE_FDK_AAC" = "x1"], AC_DEFINE([HAVE_FDK_AAC], 1, [Bluez 5 A2DP AAC codec enabled]))
+
+## aptX, aptX HD support (FFmpeg libavcodec) ##
+AC_ARG_ENABLE([bluez5-aptx-codec],
+    AS_HELP_STRING([--disable-bluez5-aptx-codec],[Disable optional A2DP aptX, aptX HD codecs support (Bluez 5)]))
+AS_IF([test "x$HAVE_BLUEZ_5" = "x1" && test "x$enable_bluez5_aptx_codec" != "xno"],
+    [PKG_CHECK_MODULES(FF_AVCODEC, [ libavcodec >= 58.18.100 ], HAVE_FF_AVCODEC=1, HAVE_FF_AVCODEC=0)],
+    HAVE_FF_AVCODEC=0)
+AS_IF([test "x$HAVE_BLUEZ_5" = "x1" && test "x$enable_bluez5_aptx_codec" != "xno"],
+    [PKG_CHECK_MODULES(FF_AVUTIL, [ libavcodec >= 56.14.100 ], HAVE_FF_AVUTIL=1, HAVE_FF_AVUTIL=0)],
+    HAVE_FF_AVUTIL=0)
+AS_IF([test "x$HAVE_FF_AVCODEC" = "x1" && test "x$HAVE_FF_AVUTIL" = "x1"], HAVE_FF_APTX=1, HAVE_FF_APTX=0)
+AC_SUBST(HAVE_FF_APTX)
+AM_CONDITIONAL([HAVE_FF_APTX], [test "x$HAVE_FF_APTX" = x1])
+AS_IF([test "x$HAVE_FF_APTX" = "x1"], AC_DEFINE([HAVE_FF_APTX], 1, [Bluez 5 A2DP aptX, aptX HD codecs enabled]))
 
 ## Bluetooth Headset profiles backend ##
 
@@ -1598,6 +1612,7 @@ AS_IF([test "x$HAVE_SYSTEMD_LOGIN" = "x1"], ENABLE_SYSTEMD_LOGIN=yes, ENABLE_SYS
 AS_IF([test "x$HAVE_SYSTEMD_JOURNAL" = "x1"], ENABLE_SYSTEMD_JOURNAL=yes, ENABLE_SYSTEMD_JOURNAL=no)
 AS_IF([test "x$HAVE_BLUEZ_5" = "x1"], ENABLE_BLUEZ_5=yes, ENABLE_BLUEZ_5=no)
 AS_IF([test "x$HAVE_FDK_AAC" = "x1"], ENABLE_BLUEZ_5_AAC_CODEC=yes, ENABLE_BLUEZ_5_AAC_CODEC=no)
+AS_IF([test "x$HAVE_FF_APTX" = "x1"], ENABLE_BLUEZ_5_APTX_CODEC=yes, ENABLE_BLUEZ_5_APTX_CODEC=no)
 AS_IF([test "x$HAVE_BLUEZ_5_OFONO_HEADSET" = "x1"], ENABLE_BLUEZ_5_OFONO_HEADSET=yes, ENABLE_BLUEZ_5_OFONO_HEADSET=no)
 AS_IF([test "x$HAVE_BLUEZ_5_NATIVE_HEADSET" = "x1"], ENABLE_BLUEZ_5_NATIVE_HEADSET=yes, ENABLE_BLUEZ_5_NATIVE_HEADSET=no)
 AS_IF([test "x$HAVE_HAL_COMPAT" = "x1"], ENABLE_HAL_COMPAT=yes, ENABLE_HAL_COMPAT=no)
@@ -1657,6 +1672,7 @@ echo "
     Enable D-Bus:                  ${ENABLE_DBUS}
       Enable BlueZ 5:              ${ENABLE_BLUEZ_5}
         Enable A2DP AAC codec:     ${ENABLE_BLUEZ_5_AAC_CODEC}
+        Enable A2DP aptX(HD):      ${ENABLE_BLUEZ_5_APTX_CODEC}
         Enable ofono headsets:     ${ENABLE_BLUEZ_5_OFONO_HEADSET}
         Enable native headsets:    ${ENABLE_BLUEZ_5_NATIVE_HEADSET}
     Enable udev:                   ${ENABLE_UDEV}
